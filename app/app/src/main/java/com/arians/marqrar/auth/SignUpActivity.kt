@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.sp
 import com.arians.marqrar.ui.theme.MarQRARTheme
 
 class SignUpActivity : ComponentActivity() {
-    private fun SignUp() {
+    private fun signUp(fullname: String, email: String, username: String, password: String) {
 
     }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +58,10 @@ class SignUpActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    SignUpComponent()
+                    SignUpComponent(onSubmit = {
+                        fullname, email, username, password ->
+                        signUp(fullname, email, username, password)
+                    })
                 }
             }
         }
@@ -66,7 +69,10 @@ class SignUpActivity : ComponentActivity() {
 }
 
 @Composable
-fun SignUpComponent(modifier: Modifier = Modifier) {
+fun SignUpComponent(
+    onSubmit: (String, String, String, String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
@@ -113,7 +119,9 @@ fun SignUpComponent(modifier: Modifier = Modifier) {
             color = Color.Gray
         )
 
-        SignUpSubmitButton()
+        SignUpSubmitButton( {
+            onSubmit(fullName, email, username, password)
+        })
     }
 }
 
@@ -131,9 +139,9 @@ fun SignUpHeading(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SignUpSubmitButton(modifier: Modifier = Modifier) {
+fun SignUpSubmitButton(onSubmit: () -> Unit, modifier: Modifier = Modifier) {
     Button(
-        onClick = { /*TODO*/ },
+        onClick = { onSubmit() },
         modifier = modifier
             .padding(top = 15.dp)
             .fillMaxWidth(0.9f)

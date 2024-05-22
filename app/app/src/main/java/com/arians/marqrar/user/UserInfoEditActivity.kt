@@ -1,5 +1,6 @@
 package com.arians.marqrar.user
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -43,7 +44,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arians.marqrar.ui.theme.MarQRARTheme
 
+class UserDetails (
+    val firstName: String,
+    val dob: String,
+    val email: String,
+    val phoneNo: String,
+    val gender: String,
+    )
+
 class UserInfoEditActivity: ComponentActivity() {
+    private fun submitDetails(userDetails: UserDetails) {
+        println(userDetails.firstName)
+
+        val homeActivityIntent = Intent(
+            this,
+            HomeActivity::class.java
+        )
+
+        // TODO: Save Details in DB
+
+        startActivity(homeActivityIntent)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -55,7 +76,9 @@ class UserInfoEditActivity: ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Column(modifier = Modifier.padding(22.dp)) {
-                        UserInfoEditScreen()
+                        UserInfoEditScreen { userDetails ->
+                            submitDetails(userDetails)
+                        }
                     }
                 }
             }
@@ -64,8 +87,12 @@ class UserInfoEditActivity: ComponentActivity() {
 }
 
 @Composable
-fun UserInfoEditScreen() {
+fun UserInfoEditScreen(onSubmit: (UserDetails) -> kotlin.Unit) {
     var fullName by remember { mutableStateOf("") }
+    var dob by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var phoneNo by remember { mutableStateOf("") }
+    var gender by remember { mutableStateOf("") }
 
     UserInfoTopBar()
 
@@ -75,22 +102,26 @@ fun UserInfoEditScreen() {
         UserInfoTextInput(name = "Full Name", value = fullName, onValueChange = {
             fullName = it
         })
-        UserInfoTextInput(name = "Date Of Birth", value = fullName, onValueChange = {
-            fullName = it
+        UserInfoTextInput(name = "Date Of Birth", value = dob, onValueChange = {
+            dob = it
         })
-        UserInfoTextInput(name = "Email", value = fullName, onValueChange = {
-            fullName = it
+        UserInfoTextInput(name = "Email", value = email, onValueChange = {
+            email = it
         })
-        UserInfoTextInput(name = "Phone No", value = fullName, onValueChange = {
-            fullName = it
+        UserInfoTextInput(name = "Phone No", value = phoneNo, onValueChange = {
+            phoneNo = it
         })
 
-        UserInfoTextInput(name = "Gender", value = fullName, onValueChange = {
-            fullName = it
+        UserInfoTextInput(name = "Gender", value = gender, onValueChange = {
+            gender = it
         })
     }
 
-    UserInfoSubmitButton()
+    UserInfoSubmitButton({
+        val userInfo = UserDetails(fullName, dob, email, phoneNo, gender)
+
+        onSubmit(userInfo)
+    })
 }
 
 @Composable
@@ -106,7 +137,7 @@ fun UserInfoTopBar() {
             Icon(
                 Icons.Outlined.ArrowBack,
                 contentDescription = "Back Button",
-                modifier = Modifier.width(25.dp)
+                modifier = Modifier.width(25.dp),
             )
             Text(
                 text = "Complete Your Profile",
@@ -165,9 +196,9 @@ fun UserInfoTextInput(name: String, value: String, onValueChange: (String) -> Un
 }
 
 @Composable
-fun UserInfoSubmitButton(modifier: Modifier = Modifier) {
+fun UserInfoSubmitButton(onSubmit: () -> Unit  ,modifier: Modifier = Modifier) {
     Button(
-        onClick = { /*TODO*/ },
+        onClick = { onSubmit() },
         modifier = modifier
             .padding(top = 15.dp)
             .height(60.dp)
